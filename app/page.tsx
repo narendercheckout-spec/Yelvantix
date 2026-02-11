@@ -2,7 +2,6 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturesSection } from "@/components/features-section"
-import { AdBanner } from "@/components/ad-banner"
 
 export default function HomePage() {
   const jsonLd = {
@@ -28,13 +27,7 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         <HeroSection />
-        <div className="mx-auto max-w-7xl px-4 py-4 lg:px-8">
-          <AdBanner format="horizontal" />
-        </div>
         <FeaturesSection />
-        <div className="mx-auto max-w-7xl px-4 py-4 lg:px-8">
-          <AdBanner format="horizontal" />
-        </div>
       </main>
       <SiteFooter />
     </>

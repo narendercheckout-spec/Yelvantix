@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AdBanner } from "@/components/ad-banner"
 import { ImageCompressorTool } from "@/components/tools/image-compressor-tool"
 
 export const metadata: Metadata = {
@@ -48,11 +47,7 @@ export default function ImageCompressorPage() {
           </p>
         </div>
 
-        <AdBanner format="horizontal" className="mb-8" />
-
         <ImageCompressorTool />
-
-        <AdBanner format="horizontal" className="mt-8" />
       </main>
       <SiteFooter />
     </>

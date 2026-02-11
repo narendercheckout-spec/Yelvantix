@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Yelvatix' }],
   creator: 'Yelvatix',
+  verification: {
+    google: 'ca-pub-9846167379739321',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

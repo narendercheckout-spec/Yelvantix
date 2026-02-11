@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AdBanner } from "@/components/ad-banner"
 import { JobSearchTool } from "@/components/tools/job-search-tool"
 
 export const metadata: Metadata = {
@@ -47,11 +46,7 @@ export default function JobSearchPage() {
           </p>
         </div>
 
-        <AdBanner format="horizontal" className="mb-8" />
-
         <JobSearchTool />
-
-        <AdBanner format="horizontal" className="mt-8" />
       </main>
       <SiteFooter />
     </>

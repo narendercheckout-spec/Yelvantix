@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AdBanner } from "@/components/ad-banner"
 import { ResumeBuilderTool } from "@/components/tools/resume-builder-tool"
 
 export const metadata: Metadata = {
@@ -48,11 +47,7 @@ export default function ResumeBuilderPage() {
           </p>
         </div>
 
-        <AdBanner format="horizontal" className="mb-8" />
-
         <ResumeBuilderTool />
-
-        <AdBanner format="horizontal" className="mt-8" />
       </main>
       <SiteFooter />
     </>
