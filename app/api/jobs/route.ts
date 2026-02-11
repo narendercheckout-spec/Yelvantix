@@ -377,14 +377,23 @@ function getFallbackJobs(role: string, userSkills: string[], location: string, e
     { id: "r6", title: "Full Stack Developer", company: "Turing", location: "Remote, India", type: "Full-time", experienceLabel: "Mid-Level (3-5 yrs)", matchedSkills: ["react", "node.js", "javascript", "typescript", "sql"], description: "Work remotely on full-stack projects for US tech companies. Competitive compensation.", postedDate: "1 day ago", salary: "15L - 30L /yr", applyLink: "https://www.naukri.com/fullstack-remote-india-jobs", source: "curated" as const },
   ]
 
-  // STEP 1: STRICT skill filtering - a job must have at least one skill that exactly matches a user skill
+  // STEP 1: Filter by role skills - show jobs that have ANY overlap with the role's skills
   let filtered = ALL_FALLBACK_JOBS.filter((job) => {
     return job.matchedSkills.some((jobSkill) =>
       userSkills.some((userSkill) => skillMatches(userSkill, jobSkill))
     )
   })
 
-  // STEP 2: STRICT location filtering - only show jobs in the user's specified location
+  // If no matches found with skill matching, try broader matching by job title
+  if (filtered.length === 0) {
+    const roleQuery = role.replace(/-/g, " ")
+    filtered = ALL_FALLBACK_JOBS.filter((job) => {
+      const jobTitle = job.title.toLowerCase()
+      return jobTitle.includes(roleQuery) || roleQuery.split(" ").some(word => word.length > 3 && jobTitle.includes(word))
+    })
+  }
+
+  // STEP 2: Location filtering - only show jobs in the user's specified location
   if (loc && loc !== "india" && loc !== "") {
     filtered = filtered.filter((job) => {
       const jobLoc = job.location.toLowerCase()
@@ -394,7 +403,7 @@ function getFallbackJobs(role: string, userSkills: string[], location: string, e
     })
   }
 
-  // STEP 3: Apply experience filter strictly
+  // STEP 3: Apply experience filter
   if (experience !== "any") {
     const expMap: Record<string, string> = {
       fresher: "Fresher",

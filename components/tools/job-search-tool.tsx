@@ -79,12 +79,15 @@ export function JobSearchTool() {
   const [hasSearched, setHasSearched] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [source, setSource] = useState<string>("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const JOBS_PER_PAGE = 10
 
   const handleSearch = async () => {
     if (!role) return
 
     setIsLoading(true)
     setHasSearched(true)
+    setCurrentPage(1) // Reset to first page on new search
 
     try {
       const params = new URLSearchParams({
@@ -224,6 +227,11 @@ export function JobSearchTool() {
                 {results.length}
               </span>{" "}
               {results.length === 1 ? "job" : "jobs"} found
+              {results.length > JOBS_PER_PAGE && (
+                <span className="ml-2">
+                  (Page {currentPage} of {Math.ceil(results.length / JOBS_PER_PAGE)})
+                </span>
+              )}
             </p>
             {source === "jsearch" && (
               <span className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
@@ -249,100 +257,127 @@ export function JobSearchTool() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
-              {results.map((job) => (
-                <article
-                  key={job.id}
-                  className="rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/20 hover:shadow-sm"
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex items-start gap-3 flex-1">
-                      {job.employerLogo && (
-                        <img
-                          src={job.employerLogo || "/placeholder.svg"}
-                          alt={`${job.company} logo`}
-                          className="h-10 w-10 shrink-0 rounded-lg border border-border object-contain bg-background"
-                          crossOrigin="anonymous"
-                          onError={(e) => {
-                            ; (e.target as HTMLImageElement).style.display =
-                              "none"
-                          }}
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="font-heading text-lg font-semibold text-foreground">
-                          {job.title}
-                        </h3>
-                        <p className="mt-0.5 text-sm text-muted-foreground">
-                          {job.company}
-                        </p>
+            <>
+              <div className="flex flex-col gap-4">
+                {results
+                  .slice((currentPage - 1) * JOBS_PER_PAGE, currentPage * JOBS_PER_PAGE)
+                  .map((job) => (
+                    <article
+                      key={job.id}
+                      className="rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/20 hover:shadow-sm"
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex items-start gap-3 flex-1">
+                          {job.employerLogo && (
+                            <img
+                              src={job.employerLogo || "/placeholder.svg"}
+                              alt={`${job.company} logo`}
+                              className="h-10 w-10 shrink-0 rounded-lg border border-border object-contain bg-background"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).style.display =
+                                  "none"
+                              }}
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="font-heading text-lg font-semibold text-foreground">
+                              {job.title}
+                            </h3>
+                            <p className="mt-0.5 text-sm text-muted-foreground">
+                              {job.company}
+                            </p>
+                          </div>
+                        </div>
+                        {job.salary && (
+                          <span className="shrink-0 rounded-md bg-accent/10 px-2.5 py-1 text-sm font-semibold text-accent">
+                            {job.salary}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                    {job.salary && (
-                      <span className="shrink-0 rounded-md bg-accent/10 px-2.5 py-1 text-sm font-semibold text-accent">
-                        {job.salary}
-                      </span>
-                    )}
-                  </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {job.location}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Briefcase className="h-3.5 w-3.5" />
-                      {job.type}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      {job.postedDate}
-                    </span>
-                    <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary">
-                      {job.experienceLabel}
-                    </span>
-                  </div>
+                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {job.location}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Briefcase className="h-3.5 w-3.5" />
+                          {job.type}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5" />
+                          {job.postedDate}
+                        </span>
+                        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary">
+                          {job.experienceLabel}
+                        </span>
+                      </div>
 
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    {job.description}
-                  </p>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        {job.description}
+                      </p>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {job.matchedSkills.map((s) => (
-                        <Badge
-                          key={s}
-                          variant="secondary"
-                          className="text-xs capitalize"
-                        >
-                          {s}
-                        </Badge>
-                      ))}
-                    </div>
-                    {job.applyLink ? (
-                      <a
-                        href={job.applyLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-transparent px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
-                      >
-                        Apply Now
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="shrink-0 gap-1.5 bg-transparent"
-                      >
-                        View Job
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap gap-1.5">
+                          {job.matchedSkills.map((s) => (
+                            <Badge
+                              key={s}
+                              variant="secondary"
+                              className="text-xs capitalize"
+                            >
+                              {s}
+                            </Badge>
+                          ))}
+                        </div>
+                        {job.applyLink ? (
+                          <a
+                            href={job.applyLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-transparent px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                          >
+                            Apply Now
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="shrink-0 gap-1.5 bg-transparent"
+                          >
+                            View Job
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+              </div>
+
+              {/* Pagination */}
+              {results.length > JOBS_PER_PAGE && (
+                <div className="mt-6 flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {Math.ceil(results.length / JOBS_PER_PAGE)}
+                  </span>
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(results.length / JOBS_PER_PAGE), p + 1))}
+                    disabled={currentPage === Math.ceil(results.length / JOBS_PER_PAGE)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
