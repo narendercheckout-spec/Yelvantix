@@ -111,16 +111,42 @@ function skillMatches(userSkill: string, jobSkill: string): boolean {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
-  const query = searchParams.get("query") || ""
+  const role = searchParams.get("role") || ""
   const location = searchParams.get("location") || "India"
   const experienceFilter = searchParams.get("experience") || "any"
   const page = searchParams.get("page") || "1"
 
-  if (!query.trim()) {
-    return NextResponse.json({ jobs: [], total: 0, error: "No query provided" })
+  if (!role.trim()) {
+    return NextResponse.json({ jobs: [], total: 0, error: "No role provided" })
   }
 
-  const searchQuery = `${query} in ${location}`
+  // Map IT roles to search queries and skills
+  const roleMap: Record<string, { query: string; skills: string[] }> = {
+    "frontend-developer": { query: "Frontend Developer", skills: ["react", "javascript", "typescript", "css", "html", "vue", "angular"] },
+    "backend-developer": { query: "Backend Developer", skills: ["node.js", "python", "java", "sql", "spring", "django", "rest api"] },
+    "fullstack-developer": { query: "Full Stack Developer", skills: ["react", "node.js", "javascript", "typescript", "sql", "mongodb"] },
+    "mobile-developer": { query: "Mobile Developer", skills: ["flutter", "react native", "swift", "kotlin", "mobile", "ios", "android"] },
+    "devops-engineer": { query: "DevOps Engineer", skills: ["aws", "docker", "kubernetes", "linux", "python", "ci/cd", "terraform"] },
+    "data-scientist": { query: "Data Scientist", skills: ["python", "machine learning", "sql", "data analysis", "tensorflow", "pytorch"] },
+    "data-analyst": { query: "Data Analyst", skills: ["python", "sql", "excel", "data analysis", "power bi", "tableau"] },
+    "qa-engineer": { query: "QA Engineer", skills: ["testing", "selenium", "python", "java", "sql", "automation"] },
+    "ui-ux-designer": { query: "UI UX Designer", skills: ["figma", "design", "css", "html", "photoshop", "sketch"] },
+    "product-designer": { query: "Product Designer", skills: ["figma", "design", "css", "html", "prototyping", "user research"] },
+    "cloud-engineer": { query: "Cloud Engineer", skills: ["aws", "azure", "gcp", "docker", "kubernetes", "terraform"] },
+    "database-admin": { query: "Database Administrator", skills: ["sql", "mysql", "postgresql", "mongodb", "oracle", "performance tuning"] },
+    "security-engineer": { query: "Security Engineer", skills: ["cybersecurity", "penetration testing", "network security", "python", "linux"] },
+    "technical-writer": { query: "Technical Writer", skills: ["writing", "documentation", "html", "markdown", "api documentation"] },
+    "product-manager": { query: "Product Manager", skills: ["product management", "agile", "jira", "data analysis", "roadmap"] },
+  }
+
+  const roleData = roleMap[role]
+  if (!roleData) {
+    return NextResponse.json({ jobs: [], total: 0, error: "Invalid role" })
+  }
+
+  const searchQuery = `${roleData.query} in ${location}`
+  const userSkills = roleData.skills
+
 
   // Try JSearch API first
   if (RAPIDAPI_KEY) {
@@ -159,12 +185,10 @@ export async function GET(request: NextRequest) {
         const apiJobs: JSearchJob[] = data.data || []
 
         if (apiJobs.length > 0) {
-          const userSkills = query.toLowerCase().split(",").map((s) => s.trim()).filter(Boolean)
-
           // Only return jobs where at least one user skill actually appears in the job
           const relevantJobs = apiJobs.filter((job) => {
             const jobText = `${job.job_title} ${job.job_description} ${(job.job_highlights?.Qualifications || []).join(" ")}`.toLowerCase()
-            return userSkills.some((skill) => jobText.includes(skill))
+            return userSkills.some((skill: string) => jobText.includes(skill))
           })
 
           const jobs = relevantJobs.map((job, idx) => ({
@@ -197,8 +221,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Fallback: curated jobs matched strictly by skills and location
-  const fallbackJobs = getFallbackJobs(query, location, experienceFilter)
+  // Fallback: curated jobs matched strictly by role and location
+  const fallbackJobs = getFallbackJobs(role, userSkills, location, experienceFilter)
 
   return NextResponse.json({
     jobs: fallbackJobs,
@@ -248,9 +272,8 @@ function truncateDescription(desc: string): string {
   return clean.slice(0, 250).replace(/\s\S*$/, "") + "..."
 }
 
-// Curated fallback jobs - strict skill + location filtering
-function getFallbackJobs(query: string, location: string, experience: string) {
-  const userSkills = query.toLowerCase().split(",").map((s) => s.trim()).filter(Boolean)
+// Curated fallback jobs - strict role + location filtering
+function getFallbackJobs(role: string, userSkills: string[], location: string, experience: string) {
   const loc = location.toLowerCase().trim()
 
   const ALL_FALLBACK_JOBS = [

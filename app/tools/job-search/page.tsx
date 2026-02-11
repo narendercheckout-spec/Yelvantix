@@ -4,13 +4,17 @@ import { SiteFooter } from "@/components/site-footer"
 import { JobSearchTool } from "@/components/tools/job-search-tool"
 
 export const metadata: Metadata = {
-  title: "Skill-Based Job Search - Find Jobs Matching Your Skills",
+  title: "IT Job Search - Find Tech Jobs Across India",
   description:
-    "Search for jobs based on your skills. Enter your abilities, select a location, and find matching opportunities instantly. Free, no login required.",
+    "Search for IT jobs by role across major Indian cities. Find Frontend, Backend, Full Stack, DevOps, Data Science, and other tech jobs. Free, no login required.",
   keywords: [
-    "job search by skills",
-    "find jobs by skills",
-    "skill based job finder",
+    "IT jobs India",
+    "tech jobs India",
+    "software developer jobs",
+    "find IT jobs by role",
+    "frontend developer jobs",
+    "backend developer jobs",
+    "data scientist jobs India",
     "free job search tool",
   ],
 }
@@ -19,7 +23,7 @@ export default function JobSearchPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Yelvatix Skill-Based Job Search",
+    name: "Yelvatix IT Job Search",
     applicationCategory: "UtilityApplication",
     operatingSystem: "Web",
     offers: {
@@ -39,10 +43,10 @@ export default function JobSearchPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
         <div className="mb-8">
           <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl text-balance">
-            Skill-Based Job Search
+            IT Job Search
           </h1>
           <p className="mt-2 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            Enter your skills to find relevant job opportunities. Our engine matches your abilities with real job listings.
+            Find IT jobs across India by role. Search for Frontend, Backend, Full Stack, DevOps, Data Science, and other tech positions in major Indian cities.
           </p>
         </div>
 

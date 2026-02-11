@@ -1,19 +1,17 @@
 "use client"
 
 import React from "react"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import {
   Search,
   MapPin,
   Briefcase,
-  X,
   ExternalLink,
   Clock,
   Loader2,
   AlertCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 
 type ExperienceLevel = "any" | "fresher" | "junior" | "mid" | "senior" | "lead"
@@ -43,59 +41,54 @@ const EXPERIENCE_OPTIONS: { value: ExperienceLevel; label: string }[] = [
   { value: "lead", label: "Lead / Principal (8+ yrs)" },
 ]
 
-const SUGGESTED_SKILLS = [
-  "JavaScript",
-  "Python",
-  "React",
-  "SQL",
-  "Node.js",
-  "TypeScript",
-  "CSS",
-  "HTML",
-  "AWS",
-  "Docker",
-  "Java",
-  "Excel",
-  "Figma",
-  "Flutter",
-  "SEO",
-  "Testing",
+const IT_JOB_ROLES = [
+  { value: "", label: "Select a role..." },
+  { value: "frontend-developer", label: "Frontend Developer" },
+  { value: "backend-developer", label: "Backend Developer" },
+  { value: "fullstack-developer", label: "Full Stack Developer" },
+  { value: "mobile-developer", label: "Mobile Developer" },
+  { value: "devops-engineer", label: "DevOps Engineer" },
+  { value: "data-scientist", label: "Data Scientist / ML Engineer" },
+  { value: "data-analyst", label: "Data Analyst / BI Developer" },
+  { value: "qa-engineer", label: "QA / Test Engineer" },
+  { value: "ui-ux-designer", label: "UI/UX Designer" },
+  { value: "product-designer", label: "Product Designer" },
+  { value: "cloud-engineer", label: "Cloud Architect / Engineer" },
+  { value: "database-admin", label: "Database Administrator" },
+  { value: "security-engineer", label: "Security Engineer" },
+  { value: "technical-writer", label: "Technical Writer" },
+  { value: "product-manager", label: "Product Manager" },
+]
+
+const LOCATIONS = [
+  { value: "India", label: "All India" },
+  { value: "Bengaluru", label: "Bangalore" },
+  { value: "Hyderabad", label: "Hyderabad" },
+  { value: "Pune", label: "Pune" },
+  { value: "Mumbai", label: "Mumbai" },
+  { value: "Gurugram", label: "Delhi/NCR (Gurugram)" },
+  { value: "Chennai", label: "Chennai" },
+  { value: "Remote", label: "Remote" },
 ]
 
 export function JobSearchTool() {
-  const [skillInput, setSkillInput] = useState("")
-  const [skills, setSkills] = useState<string[]>([])
-  const [location, setLocation] = useState("")
+  const [role, setRole] = useState("")
+  const [location, setLocation] = useState("India")
   const [experience, setExperience] = useState<ExperienceLevel>("any")
   const [results, setResults] = useState<Job[]>([])
   const [hasSearched, setHasSearched] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [source, setSource] = useState<string>("")
 
-  const addSkill = useCallback(
-    (skill: string) => {
-      const normalized = skill.trim().toLowerCase()
-      if (normalized && !skills.includes(normalized)) {
-        setSkills((prev) => [...prev, normalized])
-      }
-      setSkillInput("")
-    },
-    [skills],
-  )
-
-  const removeSkill = (skill: string) => {
-    setSkills((prev) => prev.filter((s) => s !== skill))
-  }
-
   const handleSearch = async () => {
-    if (skills.length === 0) return
+    if (!role) return
 
     setIsLoading(true)
     setHasSearched(true)
 
     try {
       const params = new URLSearchParams({
-        query: skills.join(", "),
+        role,
         location: location || "India",
         experience,
       })
@@ -113,105 +106,58 @@ export function JobSearchTool() {
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault()
-      addSkill(skillInput)
-    }
-  }
-
   return (
     <div className="flex flex-col gap-6">
       {/* Search Form */}
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col gap-5">
-          {/* Skills Input */}
+          {/* Role Selector */}
           <div>
             <label
-              htmlFor="skills-input"
+              htmlFor="role-select"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              Your Skills
+              IT Job Role
             </label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="skills-input"
-                  placeholder="Type a skill and press Enter..."
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="pl-10"
-                />
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => addSkill(skillInput)}
-                disabled={!skillInput.trim()}
+            <div className="relative">
+              <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <select
+                id="role-select"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Add
-              </Button>
-            </div>
-            {skills.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {skills.map((skill) => (
-                  <Badge
-                    key={skill}
-                    variant="secondary"
-                    className="gap-1 pr-1 text-sm capitalize"
-                  >
-                    {skill}
-                    <button
-                      onClick={() => removeSkill(skill)}
-                      className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
-                      aria-label={`Remove ${skill}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
+                {IT_JOB_ROLES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
                 ))}
-              </div>
-            )}
-            {skills.length === 0 && (
-              <div className="mt-3">
-                <p className="mb-2 text-xs text-muted-foreground">
-                  Suggested skills:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {SUGGESTED_SKILLS.map((s) => (
-                    <button
-                      key={s}
-                      suppressHydrationWarning
-                      onClick={() => addSkill(s)}
-                      className="rounded-md border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+              </select>
+            </div>
           </div>
 
-          {/* Location Input */}
+          {/* Location Selector */}
           <div>
             <label
-              htmlFor="location-input"
+              htmlFor="location-select"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              Location{" "}
-              <span className="text-muted-foreground">(defaults to all India)</span>
+              Location
             </label>
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="location-input"
-                placeholder="e.g. Remote, Bengaluru, Mumbai, Hyderabad..."
+              <select
+                id="location-select"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="pl-10"
-              />
+                className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:w-64"
+              >
+                {LOCATIONS.map((loc) => (
+                  <option key={loc.value} value={loc.value}>
+                    {loc.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -243,7 +189,7 @@ export function JobSearchTool() {
           {/* Search Button */}
           <Button
             onClick={handleSearch}
-            disabled={skills.length === 0 || isLoading}
+            disabled={!role || isLoading}
             className="w-full gap-2 sm:w-auto"
           >
             {isLoading ? (
@@ -264,7 +210,7 @@ export function JobSearchTool() {
             Searching for jobs...
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Finding the best matches for your skills across India
+            Finding the best IT job opportunities across India
           </p>
         </div>
       )}
@@ -296,12 +242,10 @@ export function JobSearchTool() {
             <div className="rounded-xl border border-border bg-card p-12 text-center">
               <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
-                No jobs found for your exact criteria
+                No jobs found for your criteria
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                No jobs match your skills in the specified location. Try a
-                different location, adjust your skills, or search with
-                fewer filters.
+                Try selecting a different role, location, or experience level.
               </p>
             </div>
           ) : (
@@ -320,7 +264,7 @@ export function JobSearchTool() {
                           className="h-10 w-10 shrink-0 rounded-lg border border-border object-contain bg-background"
                           crossOrigin="anonymous"
                           onError={(e) => {
-                            ;(e.target as HTMLImageElement).style.display =
+                            ; (e.target as HTMLImageElement).style.display =
                               "none"
                           }}
                         />
@@ -368,13 +312,7 @@ export function JobSearchTool() {
                       {job.matchedSkills.map((s) => (
                         <Badge
                           key={s}
-                          variant={
-                            skills.some(
-                              (us) => us.toLowerCase() === s.toLowerCase(),
-                            )
-                              ? "default"
-                              : "secondary"
-                          }
+                          variant="secondary"
                           className="text-xs capitalize"
                         >
                           {s}
