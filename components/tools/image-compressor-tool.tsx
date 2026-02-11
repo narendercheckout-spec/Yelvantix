@@ -54,8 +54,9 @@ export function ImageCompressorTool() {
             }
             ctx.drawImage(img, 0, 0)
 
-            const mimeType = file.type === "image/png" ? "image/png" : "image/jpeg"
-            const qualityVal = mimeType === "image/png" ? undefined : quality / 100
+            // Convert all images to JPEG for compression (PNG is lossless and doesn't compress well)
+            const mimeType = "image/jpeg"
+            const qualityVal = quality / 100
 
             canvas.toBlob(
               (blob) => {
@@ -137,9 +138,9 @@ export function ImageCompressorTool() {
   const downloadImage = (img: CompressedImage) => {
     const a = document.createElement("a")
     a.href = img.compressedUrl
-    const ext = img.name.split(".").pop() || "jpg"
     const nameWithoutExt = img.name.replace(/\.[^.]+$/, "")
-    a.download = `${nameWithoutExt}-compressed.${ext}`
+    // All compressed images are now JPEG format
+    a.download = `${nameWithoutExt}-compressed.jpg`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -202,11 +203,10 @@ export function ImageCompressorTool() {
             fileInputRef.current?.click()
           }
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
-          dragOver
-            ? "border-primary bg-primary/5"
-            : "border-border bg-card hover:border-primary/40"
-        }`}
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 text-center transition-colors ${dragOver
+          ? "border-primary bg-primary/5"
+          : "border-border bg-card hover:border-primary/40"
+          }`}
       >
         <Upload className={`h-12 w-12 ${dragOver ? "text-primary" : "text-muted-foreground/50"}`} />
         <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">

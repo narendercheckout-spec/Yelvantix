@@ -4,6 +4,7 @@ const tools = [
   { href: "/tools/job-search", label: "Job Search" },
   { href: "/tools/resume-builder", label: "Resume Builder" },
   { href: "/tools/image-compressor", label: "Image Compressor" },
+  { href: "/tools/image-converter", label: "Image Converter" },
 ]
 
 export function SiteFooter() {

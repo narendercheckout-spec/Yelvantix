@@ -3,13 +3,14 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import { Menu, X, Search, FileText, ImageDown } from "lucide-react"
+import { Menu, X, Search, FileText, ImageDown, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navItems = [
   { href: "/tools/job-search", label: "Job Search", icon: Search },
   { href: "/tools/resume-builder", label: "Resume Builder", icon: FileText },
   { href: "/tools/image-compressor", label: "Image Compressor", icon: ImageDown },
+  { href: "/tools/image-converter", label: "Image Converter", icon: RefreshCw },
 ]
 
 export function SiteHeader() {

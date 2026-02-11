@@ -1,6 +1,6 @@
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, Search, FileText, ImageDown } from "lucide-react"
+import { ArrowRight, Search, FileText, ImageDown, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
@@ -18,7 +18,7 @@ export function HeroSection() {
             <span className="text-primary">Productivity</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-            Search jobs by skills, build professional resumes, and compress images instantly. No signup, no paywall, no limits.
+            Search jobs by skills, build professional resumes, compress and convert images instantly. No signup, no paywall, no limits.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="w-full gap-2 sm:w-auto">
@@ -33,7 +33,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-4 md:grid-cols-3" id="tools">
+        <div className="mx-auto mt-16 grid max-w-5xl gap-4 md:grid-cols-2 lg:grid-cols-4" id="tools">
           <ToolCard
             href="/tools/job-search"
             icon={Search}
@@ -51,6 +51,12 @@ export function HeroSection() {
             icon={ImageDown}
             title="Image Compressor"
             description="Reduce image file size without losing quality. Supports JPG, PNG, and WebP formats."
+          />
+          <ToolCard
+            href="/tools/image-converter"
+            icon={RefreshCw}
+            title="Image Converter"
+            description="Convert images between formats. Supports JPG, PNG, WebP, and AVIF with quality control."
           />
         </div>
       </div>
