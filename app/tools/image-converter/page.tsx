@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { ImageConverterTool } from "@/components/tools/image-converter-tool"
+import { SiteFooter } from "@/components/site-footer"
 import { Download, Shield, Zap } from "lucide-react"
 
 export const metadata: Metadata = {
@@ -241,6 +242,7 @@ export default function ImageConverterPage() {
                     </div>
                 </div>
             </div>
+            <SiteFooter />
         </>
     )
 }
